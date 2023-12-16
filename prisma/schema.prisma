@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  name       String?
+  role       Role        @default(NURSE)
+  patients   Round[]
+  treatments Treatment[]
+}
+
+model Patient {
+  id              Int      @id @default(autoincrement())
+  name            String
+  age             Int
+  weight          Int
+  job             String?
+  married         Boolean?
+  bloodType       String?
+  pastIllnesses   String?
+  pastMedications String?
+  rounds          Round[]
+}
+
+model Round {
+  id                     Int        @id @default(autoincrement())
+  patientId              Int
+  temperature            Float
+  heartRate              Int
+  respirationRate        Int
+  bloodPressureSystolic  Int
+  bloodPressureDiastolic Int
+  oxygenSaturation       Int
+  bloodGlucose           Int
+  dateRecorded           DateTime
+  painScale              Int
+  physicalSymptoms       String
+  comments               String?
+  status                 Status     @default(RED)
+  nurseId                Int
+patient                Patient    @relation(fields: [patientId], references: [id])
+  nurse                  User       @relation(fields: [nurseId], references: [id])
+  treatment              Treatment?
+
+  @@index([patientId])
+  @@index([nurseId])
+}
+
+model Treatment {
+  id            Int      @id @default(autoincrement())
+  roundId       Int      @unique
+  doctorId      Int
+  time          DateTime
+  treatment     String
+  complications String
+  notes         String
+round         Round    @relation(fields: [roundId], references: [id])
+  doctor        User     @relation(fields: [doctorId], references: [id])
+
+  @@index([doctorId])
+}
+
+enum Role {
+  DOCTOR
+  NURSE
+}
+
+enum Status {
+  RED
+  ORANGE
+  GREEN
+  BLUE
+  WHITE
+}
