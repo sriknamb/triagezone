@@ -1,5 +1,7 @@
 "use client";
-import { Button, ButtonGroup } from "@nextui-org/react";
+
+import { Button } from "@nextui-org/react";
+import React from "react";
 import Typewriter from "typewriter-effect";
 export default function Home() {
   return (
